@@ -28,6 +28,7 @@ const EXAMPLE_DESCRIPTION =
   "I have one week to decide whether to move to Singapore for work. It feels like a once-in-a-lifetime opportunity, but I'm stressed and worried about what I haven't considered.";
 
 const STORAGE_KEY = 'system3.decision.v1';
+const THEME_STORAGE_KEY = 'system3.theme';
 
 const INITIAL_CLARIFICATIONS = {
   options: '',
@@ -61,6 +62,16 @@ interface LocalSnapshot {
 }
 
 export default function App() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const saved = localStorage.getItem(THEME_STORAGE_KEY);
+      if (saved === 'light' || saved === 'dark') return saved;
+      if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return 'dark';
+    } catch {
+      // Ignore storage errors
+    }
+    return 'light';
+  });
   const [saveLocally, setSaveLocally] = useState(false);
   const [stage, setStage] = useState<Stage>('share');
   const [completedStages, setCompletedStages] = useState<Stage[]>([]);
@@ -92,6 +103,15 @@ export default function App() {
   const [lensesError, setLensesError] = useState<string | null>(null);
   const [rehearsalError, setRehearsalError] = useState<string | null>(null);
   const [recordError, setRecordError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Ignore storage errors
+    }
+  }, [theme]);
 
   useEffect(() => {
     try {
@@ -382,11 +402,24 @@ export default function App() {
     }
   }
 
+  const currentStageMeta = STAGES.find((s) => s.id === stage) ?? STAGES[0];
+
   return (
     <div className="app-shell">
       <header className="app-header">
-        <div>
-          <h1 className="brand-title">System 3</h1>
+        <div className="brand-lockup">
+          <h1 className="brand-title">
+            <span className="wordmark" aria-label="System 3">
+              <span aria-hidden="true">S</span>
+              <span className="wordmark-y" aria-hidden="true">
+                y
+              </span>
+              <span aria-hidden="true">stem</span>
+              <span className="wordmark-three" aria-hidden="true">
+                3
+              </span>
+            </span>
+          </h1>
           <p className="brand-tagline">
             System 1 thinks fast. System 2 thinks slow. System 3 challenges how you think.
           </p>
@@ -400,6 +433,14 @@ export default function App() {
             />
             Save on this device
           </label>
+          <button
+            type="button"
+            className="btn btn-sm"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            onClick={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+          >
+            {theme === 'light' ? 'Dark mode' : 'Light mode'}
+          </button>
           <button type="button" className="btn btn-sm" onClick={handleClearDecision}>
             Clear this decision
           </button>
@@ -441,9 +482,70 @@ export default function App() {
         })}
       </nav>
 
+      <nav aria-label="Mobile workflow progress" className="mobile-progress">
+        <div className="mobile-progress-header">
+          <span>
+            Step {currentStageMeta.number} of 5 — {currentStageMeta.label}
+          </span>
+        </div>
+        <div className="mobile-progress-segments">
+          {STAGES.map((item) => {
+            const isCurrent = stage === item.id;
+            const isDone = completedStages.includes(item.id);
+            const canNavigate =
+              item.id === 'share' ||
+              (item.id === 'understand' && Boolean(rawDescription.trim()) && !shareOverLimit) ||
+              isDone ||
+              Boolean(structured);
+            const stateAttr = isCurrent ? 'current' : isDone ? 'completed' : 'upcoming';
+
+            return (
+              <button
+                key={item.id}
+                type="button"
+                className="mobile-segment"
+                data-state={stateAttr}
+                aria-label={`Step ${item.number}: ${item.label}`}
+                aria-current={isCurrent ? 'step' : undefined}
+                disabled={!canNavigate}
+                onClick={() => goToStage(item.id)}
+              />
+            );
+          })}
+        </div>
+      </nav>
+
       {stage === 'share' && (
-        <section className="card">
-          <h2>What decision is weighing on you?</h2>
+        <>
+          <section className="hero-section" aria-label="Introduction">
+            <div className="hero-copy">
+              <p className="hero-eyebrow">Decision Laboratory</p>
+              <h2 className="hero-headline">
+                The decisions that shape your life deserve deeper thinking.
+              </h2>
+              <p className="hero-body">
+                A space to question assumptions, explore possibilities, and see what you might be
+                missing.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  const el = document.getElementById('decision-raw');
+                  el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                  el?.focus();
+                }}
+              >
+                Start a Decision
+              </button>
+            </div>
+            <div className="hero-visual">
+              <img className="hero-illustration" src="/hero-sailboat.png" alt="" />
+            </div>
+          </section>
+
+          <section className="card">
+            <h2>What decision is weighing on you?</h2>
           <p className="helper">
             You don&apos;t need to have it figured out. Tell us what&apos;s happening in your own words.
           </p>
@@ -472,7 +574,7 @@ export default function App() {
             >
               <span
                 style={{
-                  color: shareOverLimit ? 'var(--error-text)' : 'var(--text-muted)',
+                  color: shareOverLimit ? 'var(--color-error-text)' : 'var(--color-text-muted)',
                 }}
               >
                 {shareOverLimit
@@ -483,10 +585,10 @@ export default function App() {
                 style={{
                   fontWeight: shareWordCount >= 250 ? 600 : 400,
                   color: shareOverLimit
-                    ? 'var(--error-text)'
+                    ? 'var(--color-error-text)'
                     : shareWordCount >= 250
-                      ? '#9a6700'
-                      : 'var(--text-muted)',
+                      ? 'var(--color-warning)'
+                      : 'var(--color-text-muted)',
                 }}
               >
                 {shareWordCount} / {MAX_SHARE_WORDS} words
@@ -536,7 +638,8 @@ export default function App() {
               Continue
             </button>
           </div>
-        </section>
+          </section>
+        </>
       )}
 
       {stage === 'understand' && (
@@ -660,7 +763,7 @@ export default function App() {
                   Decision statement: {structured.data.decision_statement}
                 </p>
                 <p style={{ margin: 0 }}>{structured.data.acknowledgment}</p>
-                <p style={{ margin: '8px 0 0', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                <p style={{ margin: '8px 0 0', fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
                   Model: {structured.model} · Validated structured JSON
                 </p>
               </div>

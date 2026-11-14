@@ -83,7 +83,7 @@ export function ChallengeStage({
                       Evidence from your input: &ldquo;{spot.evidence_quote}&rdquo;
                     </div>
                   ) : (
-                    <p style={{ margin: '6px 0', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                    <p style={{ margin: '6px 0', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>
                       <em>Not evidenced in your text — an exploratory question worth asking.</em>
                     </p>
                   )}
@@ -92,7 +92,7 @@ export function ChallengeStage({
                   <p style={{ margin: '6px 0' }}>
                     <strong>Challenge question:</strong> {spot.challenge_question}
                   </p>
-                  <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                  <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
                     <strong>Practical check:</strong> {spot.verification_action}
                   </p>
                 </article>

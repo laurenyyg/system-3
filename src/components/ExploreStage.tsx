@@ -248,7 +248,7 @@ export function ExploreStage({
                           : `Questions to consider (${lens.questions.length})`}
                       </button>
                     </div>
-                    <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                    <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--color-text-muted)' }}>
                       {lens.recommendation_reason}
                     </p>
 
@@ -260,7 +260,7 @@ export function ExploreStage({
                             style={{
                               margin: '2px 0 0',
                               fontSize: '0.84rem',
-                              color: 'var(--text-muted)',
+                              color: 'var(--color-text-muted)',
                             }}
                           >
                             You don&apos;t need to know the answer now.
@@ -282,7 +282,7 @@ export function ExploreStage({
                                 style={{
                                   margin: 0,
                                   fontSize: '0.88rem',
-                                  color: 'var(--text-muted)',
+                                  color: 'var(--color-text-muted)',
                                 }}
                               >
                                 <strong>Next step:</strong> {q.next_step}
@@ -441,7 +441,7 @@ export function ExploreStage({
                         style={{
                           margin: '6px 0 0',
                           fontSize: '0.88rem',
-                          color: 'var(--text-muted)',
+                          color: 'var(--color-text-muted)',
                         }}
                       >
                         <strong>Action now:</strong> {sc.action_now}
