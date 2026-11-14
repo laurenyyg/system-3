@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   countWords,
   MAX_SHARE_WORDS,
@@ -11,7 +11,7 @@ import {
   type Stage,
   type StructureDecisionOutput,
 } from '../shared/schemas';
-import { callAnalyze } from './api';
+import { callAnalyze, fetchDecisionStartsCount, recordDecisionStart } from './api';
 import { ChallengeStage } from './components/ChallengeStage';
 import { ExploreStage } from './components/ExploreStage';
 import { LandingPage } from './components/LandingPage';
@@ -101,6 +101,13 @@ interface LocalSnapshot {
   record?: Versioned<DecisionRecordObject>;
 }
 
+function createStartId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `start-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 export default function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     try {
@@ -113,6 +120,8 @@ export default function App() {
     return 'light';
   });
   const [view, setView] = useState<'landing' | 'workspace'>('landing');
+  const [decisionStartsCount, setDecisionStartsCount] = useState<number | null>(null);
+  const recordingStartRef = useRef(false);
   const [saveLocally, setSaveLocally] = useState(false);
   const [stage, setStage] = useState<Stage>('share');
   const [completedStages, setCompletedStages] = useState<Stage[]>([]);
@@ -153,6 +162,24 @@ export default function App() {
       // Ignore storage errors
     }
   }, [theme]);
+
+  useEffect(() => {
+    let active = true;
+    fetchDecisionStartsCount().then((count) => {
+      if (active && count !== null) {
+        setDecisionStartsCount(count);
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (view === 'landing') {
+      recordingStartRef.current = false;
+    }
+  }, [view]);
 
   useEffect(() => {
     try {
@@ -454,6 +481,24 @@ export default function App() {
       completedStages.length > 0,
   );
 
+  function trackNewDecisionStart() {
+    if (recordingStartRef.current) return;
+    recordingStartRef.current = true;
+    recordDecisionStart(createStartId()).then((nextCount) => {
+      if (nextCount !== null) {
+        setDecisionStartsCount(nextCount);
+      }
+    });
+  }
+
+  function handleEnterFromLanding() {
+    if (!hasInProgressDecision) {
+      trackNewDecisionStart();
+    }
+    setView('workspace');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
   function handleStartExample(description: string, exampleDeadline: string) {
     if (
       hasInProgressDecision &&
@@ -461,6 +506,7 @@ export default function App() {
     ) {
       return;
     }
+    trackNewDecisionStart();
     const trimmed = description.trim();
     const matchedClarifications =
       trimmed === CAREER_EXAMPLE_DESCRIPTION
@@ -506,10 +552,8 @@ export default function App() {
         theme={theme}
         onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
         hasInProgressDecision={hasInProgressDecision}
-        onEnterWorkspace={() => {
-          setView('workspace');
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }}
+        decisionStartsCount={decisionStartsCount}
+        onEnterWorkspace={handleEnterFromLanding}
         onStartExample={handleStartExample}
       />
     );
@@ -586,8 +630,9 @@ export default function App() {
 
       <div className="privacy-note">
         <strong>Privacy &amp; agency:</strong> Analysis inputs are sent to the Gemini API to generate
-        questions and structured context. Nothing is stored in a database, and local browser saving
-        is off unless you enable <em>Save on this device</em>.
+        questions and structured context. Decision content is never stored in a database (only an
+        anonymous aggregate start count is recorded), and local browser saving is off unless you
+        enable <em>Save on this device</em>.
       </div>
 
       <nav aria-label="Decision workflow progress" className="progress-tracker">

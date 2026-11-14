@@ -3,6 +3,7 @@ import path from 'node:path';
 import http from 'node:http';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import analyzeHandler from '../api/analyze.js';
+import decisionStartsHandler from '../api/decision-starts.js';
 
 const MIME_TYPES: Record<string, string> = {
   '.html': 'text/html; charset=utf-8',
@@ -45,7 +46,14 @@ const server = http.createServer(async (req, res) => {
   }
 
   // 2. API routes handled before static/SPA fallback
-  if (urlPath === '/api/analyze') {
+  const apiHandler =
+    urlPath === '/api/analyze'
+      ? analyzeHandler
+      : urlPath === '/api/decision-starts'
+        ? decisionStartsHandler
+        : null;
+
+  if (apiHandler) {
     let parsedBody: unknown;
     try {
       parsedBody = await readJsonBody(req);
@@ -74,7 +82,7 @@ const server = http.createServer(async (req, res) => {
       },
     }) as unknown as VercelResponse;
 
-    await analyzeHandler(vercelReq, vercelRes);
+    await apiHandler(vercelReq, vercelRes);
     return;
   }
 

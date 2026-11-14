@@ -41,4 +41,5 @@ System 3 is a Gemini-powered decision-thinking companion for high-stakes decisio
    - `GEMINI_API_KEY` — *(Required)* Your Google Gemini API key.
    - `GEMINI_MODEL` — *(Optional, defaults to `gemini-3.6-flash`)*
    - `PORT` — Provided automatically by Railway; `server/prod.ts` binds to `0.0.0.0:$PORT`.
-4. **Healthcheck path (optional):** `/health` returns `200 {"ok":true,"service":"system-3"}` without calling Gemini.
+4. **Persistent decision-start counter (optional):** Attach a **Railway Volume** to the service with mount path `/data`. Railway automatically injects `RAILWAY_VOLUME_MOUNT_PATH`, so `/api/decision-starts` persists the aggregate start count across deployments without an external database.
+5. **Healthcheck path (optional):** `/health` returns `200 {"ok":true,"service":"system-3"}` without calling Gemini.

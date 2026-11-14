@@ -2,7 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import http from 'node:http';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import handler from '../api/analyze.js';
+import analyzeHandler from '../api/analyze.js';
+import decisionStartsHandler from '../api/decision-starts.js';
 
 function loadEnvFile(filePath: string) {
   if (!fs.existsSync(filePath)) return;
@@ -32,7 +33,15 @@ loadEnvFile(path.resolve(process.cwd(), '.env'));
 const port = Number(process.env.API_PORT || 3001);
 
 const server = http.createServer(async (req, res) => {
-  if (req.url?.startsWith('/api/analyze')) {
+  const urlPath = (req.url || '/').split('?')[0];
+  const apiHandler =
+    urlPath === '/api/analyze'
+      ? analyzeHandler
+      : urlPath === '/api/decision-starts'
+        ? decisionStartsHandler
+        : null;
+
+  if (apiHandler) {
     const chunks: Buffer[] = [];
     for await (const chunk of req) {
       chunks.push(Buffer.from(chunk));
@@ -68,7 +77,7 @@ const server = http.createServer(async (req, res) => {
       },
     }) as unknown as VercelResponse;
 
-    await handler(vercelReq, vercelRes);
+    await apiHandler(vercelReq, vercelRes);
     return;
   }
 

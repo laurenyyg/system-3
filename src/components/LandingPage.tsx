@@ -114,6 +114,7 @@ interface Props {
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   hasInProgressDecision: boolean;
+  decisionStartsCount: number | null;
   onEnterWorkspace: () => void;
   onStartExample: (description: string, deadline: string) => void;
 }
@@ -122,6 +123,7 @@ export function LandingPage({
   theme,
   onToggleTheme,
   hasInProgressDecision,
+  decisionStartsCount,
   onEnterWorkspace,
   onStartExample,
 }: Props) {
@@ -218,6 +220,18 @@ export function LandingPage({
               <button type="button" className="btn btn-primary landing-cta-btn" onClick={onEnterWorkspace}>
                 {hasInProgressDecision ? 'Continue Your Decision →' : 'Start a Decision →'}
               </button>
+              {!hasInProgressDecision && decisionStartsCount !== null && (
+                <p className="hero-social-proof">
+                  {decisionStartsCount.toLocaleString()} decisions started here.{' '}
+                  <button
+                    type="button"
+                    className="hero-social-proof-link"
+                    onClick={onEnterWorkspace}
+                  >
+                    Start yours.
+                  </button>
+                </p>
+              )}
             </div>
 
             <aside className="kahneman-note" aria-label="Intellectual inspiration">
@@ -501,7 +515,7 @@ export function LandingPage({
           <div className="landing-footer-bottom">
             <p className="landing-footer-note">© 2026 System 3</p>
             <p className="landing-footer-note">
-              No account required · Nothing stored in a database.
+              No account required · Decision content is never stored in a database.
             </p>
           </div>
         </div>
