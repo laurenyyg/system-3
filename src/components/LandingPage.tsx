@@ -1,6 +1,7 @@
+import { useEffect, useRef } from 'react';
 import heroSailboatImg from '../../assets/Vintage Sailboat Amidst Rolling Waves.png';
-import shorelineLightImg from '../../assets/system3-shoreline-light-clean.png';
-import shorelineDarkImg from '../../assets/system3-shoreline-dark-clean.png';
+import shorelineLightImg from '../../assets/system3-faithful-light.png';
+import shorelineDarkImg from '../../assets/system3-faithful-dark.png';
 
 interface ExampleScenario {
   id: string;
@@ -124,6 +125,15 @@ export function LandingPage({
   onEnterWorkspace,
   onStartExample,
 }: Props) {
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+    video.muted = true;
+    video.play().catch(() => {});
+  }, []);
+
   return (
     <div className="landing-page">
       <header className="landing-header">
@@ -178,7 +188,19 @@ export function LandingPage({
         {/* Section 01 — Hero */}
         <section className="landing-hero" aria-labelledby="hero-heading">
           <div className="landing-hero-ocean" aria-hidden="true">
-            <img className="landing-hero-img" src={heroSailboatImg} alt="" />
+            <video
+              ref={heroVideoRef}
+              className="landing-hero-img landing-hero-video"
+              autoPlay
+              loop
+              muted
+              playsInline
+              poster={heroSailboatImg}
+            >
+              <source src="/hero-ocean.webm" type="video/webm" />
+              <source src="/hero-ocean.mp4" type="video/mp4" />
+              <img className="landing-hero-img" src={heroSailboatImg} alt="" />
+            </video>
             <div className="landing-hero-scrim" />
           </div>
 
