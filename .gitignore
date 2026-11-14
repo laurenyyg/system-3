@@ -8,3 +8,12 @@ dist
 *.tsbuildinfo
 .DS_Store
 .data
+
+# Video production artifacts
+VIDEO_NOTES.md
+VIDEO_WORKFLOW.md
+ONE_PAGER_TEAM.md
+ONE_PAGER_IDEA.md
+SCRIPT_PITCH.md
+SCRIPT_DEMO.md
+assets/ghibli_*.png
