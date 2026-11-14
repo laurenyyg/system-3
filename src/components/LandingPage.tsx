@@ -311,6 +311,27 @@ export function LandingPage({
           </div>
         </section>
 
+        {/* Editorial Testimonial */}
+        <section className="landing-testimonial" aria-label="Early tester feedback">
+          <div className="landing-container">
+            <figure className="testimonial-figure">
+              <blockquote className="testimonial-quote">
+                <span className="testimonial-quote-mark" aria-hidden="true">
+                  “
+                </span>
+                I loved how it separated facts from assumptions. It even picked up on things I
+                hadn&apos;t mentioned, despite my having explored the same decision with AI before.
+                <span className="testimonial-quote-mark" aria-hidden="true">
+                  ”
+                </span>
+              </blockquote>
+              <figcaption className="testimonial-attribution">
+                — Early tester (New Zealand)
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
         {/* Section 04 — Examples */}
         <section id="examples" className="landing-section">
           <div className="landing-container">

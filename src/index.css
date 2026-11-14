@@ -1277,6 +1277,41 @@ select:focus {
   border-radius: 3px;
 }
 
+/* Editorial Testimonial */
+.landing-testimonial {
+  padding: clamp(40px, 5vw, 60px) 0;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.testimonial-figure {
+  margin: 0 auto;
+  max-width: 720px;
+  text-align: center;
+}
+
+.testimonial-quote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(22px, 2.25vw, 29px);
+  line-height: 1.42;
+  color: var(--color-text);
+}
+
+.testimonial-quote-mark {
+  color: var(--color-brand);
+  font-weight: 500;
+}
+
+.testimonial-attribution {
+  margin-top: 14px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
 /* Section 04 — Examples */
 .examples-grid {
   display: grid;
