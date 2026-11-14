@@ -62,10 +62,10 @@ export function ReflectStage({
 
   return (
     <section className="card">
-      <h2>Reflect &amp; Preserve Your Reasoning</h2>
+      <h2>Your Decision Record</h2>
       <p className="helper">
-        Review and edit your Decision Record, then copy or download it as Markdown. System 3 never
-        decides for you.
+        Bring together everything you&apos;ve shared, challenged, and explored into one Decision
+        Record—capturing your thinking, open questions, and next steps.
       </p>
 
       {isStale && (
@@ -84,7 +84,7 @@ export function ReflectStage({
 
       {!record && !loading && (
         <button type="button" className="btn btn-primary" onClick={onGenerate}>
-          Compose Decision Record with Gemini
+          Create My Decision Record
         </button>
       )}
 

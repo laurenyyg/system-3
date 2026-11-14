@@ -30,9 +30,9 @@ interface Props {
 }
 
 const SCENARIO_LABELS: Record<'positive' | 'premortem' | 'mixed', string> = {
-  positive: 'Better than expected',
-  premortem: 'Premortem (imagine an adverse outcome)',
-  mixed: 'Mixed / unexpected tradeoffs',
+  positive: '🌟 Things Go Better Than Expected',
+  premortem: "⚠️ Things Don't Go as Planned",
+  mixed: '⚖️ Some Wins, Some Tradeoffs',
 };
 
 export function ExploreStage({
@@ -68,17 +68,33 @@ export function ExploreStage({
       <h2>Explore Unknowns &amp; Possible Futures</h2>
       <p className="helper">
         Choose how you want to explore next. You can use either mode in any order, and your
-        selections and checklist progress are preserved as you switch.
+        selections are preserved as you switch.
       </p>
 
       {activeMode === null ? (
-        <div className="epistemic-grid" style={{ marginTop: 12, marginBottom: 8 }}>
-          <article className="subcard" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
+        <div className="explore-choice-grid">
+          <article className="explore-choice-card">
             <div>
+              <div className="explore-choice-icon" aria-hidden="true">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                  <polyline points="2 12 12 17 22 12" />
+                  <polyline points="2 17 12 22 22 17" />
+                </svg>
+              </div>
               <h3>Choose Your Lenses</h3>
               <p className="helper" style={{ marginBottom: 0 }}>
-                Explore your decision from different perspectives and generate actionable
-                checklists.
+                Explore your decision from different perspectives and uncover questions worth
+                exploring.
               </p>
             </div>
             <div>
@@ -87,13 +103,31 @@ export function ExploreStage({
                 className="btn btn-primary"
                 onClick={() => onSelectMode('lenses')}
               >
-                Choose Your Lenses
+                Explore Lenses
               </button>
             </div>
           </article>
 
-          <article className="subcard" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
+          <article className="explore-choice-card">
             <div>
+              <div className="explore-choice-icon" aria-hidden="true">
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="6" cy="18" r="2.5" />
+                  <circle cx="18" cy="6" r="2.5" />
+                  <circle cx="18" cy="18" r="2.5" />
+                  <path d="M8.5 18H15.5" />
+                  <path d="M8.5 16.8C11.5 15 12 9 15.5 6.8" />
+                </svg>
+              </div>
               <h3>Rehearse the Future</h3>
               <p className="helper" style={{ marginBottom: 0 }}>
                 Explore plausible future scenarios, including positive, premortem, and mixed
@@ -106,7 +140,7 @@ export function ExploreStage({
                 className="btn btn-primary"
                 onClick={() => onSelectMode('rehearse')}
               >
-                Rehearse the Future
+                Explore Scenarios
               </button>
             </div>
           </article>
@@ -157,7 +191,7 @@ export function ExploreStage({
           )}
 
           {loadingLenses && (
-            <p className="helper">Generating five tailored lenses and verification checklists…</p>
+            <p className="helper">Generating five tailored lenses and questions to explore…</p>
           )}
 
           {lensesError && (
@@ -173,10 +207,15 @@ export function ExploreStage({
 
           {lenses && (
             <div className="stack">
-              <p className="agency-note">
-                Five perspectives tailored to your decision (3 recommended). Click a lens to expand
-                its checklist and track what you need to verify.
-              </p>
+              <div>
+                <p style={{ margin: '0 0 4px', fontWeight: 600 }}>
+                  Explore questions you might not have considered. You don&apos;t need to have the
+                  answers yet.
+                </p>
+                <p className="agency-note">
+                  Questions you want to explore will be saved to your Decision Record.
+                </p>
+              </div>
               {lenses.data.lenses.map((lens) => {
                 const isSelected = selectedLensIds.includes(lens.id);
                 return (
@@ -204,7 +243,9 @@ export function ExploreStage({
                         className="btn btn-sm"
                         onClick={() => onToggleLens(lens.id)}
                       >
-                        {isSelected ? 'Hide checklist' : `Open checklist (${lens.questions.length})`}
+                        {isSelected
+                          ? 'Hide questions'
+                          : `Questions to consider (${lens.questions.length})`}
                       </button>
                     </div>
                     <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
@@ -212,37 +253,28 @@ export function ExploreStage({
                     </p>
 
                     {isSelected && (
-                      <div style={{ marginTop: 12 }}>
+                      <div>
+                        <div className="lens-questions-header">
+                          <strong style={{ fontSize: '0.95rem' }}>Questions to Consider</strong>
+                          <p
+                            style={{
+                              margin: '2px 0 0',
+                              fontSize: '0.84rem',
+                              color: 'var(--text-muted)',
+                            }}
+                          >
+                            You don&apos;t need to know the answer now.
+                          </p>
+                        </div>
+
                         {lens.questions.map((q) => {
                           const status = checklistStatuses[q.id] || 'not_checked';
+                          const toggleStatus = (next: ChecklistStatus) =>
+                            onChangeChecklistStatus(q.id, status === next ? 'not_checked' : next);
+
                           return (
                             <div key={q.id} className="checklist-item">
-                              <div
-                                style={{
-                                  display: 'flex',
-                                  justifyContent: 'space-between',
-                                  alignItems: 'flex-start',
-                                  gap: 10,
-                                  flexWrap: 'wrap',
-                                }}
-                              >
-                                <strong style={{ flex: '1 1 280px' }}>{q.question}</strong>
-                                <select
-                                  aria-label={`Status for ${q.question}`}
-                                  style={{ width: 'auto', minWidth: 150, padding: '6px 8px' }}
-                                  value={status}
-                                  onChange={(e) =>
-                                    onChangeChecklistStatus(
-                                      q.id,
-                                      e.target.value as ChecklistStatus,
-                                    )
-                                  }
-                                >
-                                  <option value="not_checked">Not checked</option>
-                                  <option value="to_investigate">To investigate</option>
-                                  <option value="answered">Answered</option>
-                                </select>
-                              </div>
+                              <strong>{q.question}</strong>
                               <p style={{ margin: '6px 0 2px', fontSize: '0.88rem' }}>
                                 <strong>Why it matters:</strong> {q.why_it_matters}
                               </p>
@@ -255,6 +287,39 @@ export function ExploreStage({
                               >
                                 <strong>Next step:</strong> {q.next_step}
                               </p>
+                              <div
+                                className="choice-chips"
+                                role="group"
+                                aria-label={`Response for ${q.question}`}
+                              >
+                                <button
+                                  type="button"
+                                  className="choice-chip"
+                                  data-choice="to_investigate"
+                                  aria-pressed={status === 'to_investigate'}
+                                  onClick={() => toggleStatus('to_investigate')}
+                                >
+                                  I want to explore this
+                                </button>
+                                <button
+                                  type="button"
+                                  className="choice-chip"
+                                  data-choice="answered"
+                                  aria-pressed={status === 'answered'}
+                                  onClick={() => toggleStatus('answered')}
+                                >
+                                  I&apos;ve already considered this
+                                </button>
+                                <button
+                                  type="button"
+                                  className="choice-chip"
+                                  data-choice="not_relevant"
+                                  aria-pressed={status === 'not_relevant'}
+                                  onClick={() => toggleStatus('not_relevant')}
+                                >
+                                  Not relevant
+                                </button>
+                              </div>
                             </div>
                           );
                         })}
@@ -341,7 +406,7 @@ export function ExploreStage({
 
               <div className="stack">
                 {activePath.scenarios.map((sc) => {
-                  const insightText = `[${activePath.label} — ${sc.kind}] ${sc.title}: ${sc.surprise_question}`;
+                  const insightText = `[Hypothetical — ${SCENARIO_LABELS[sc.kind]} | ${activePath.label}] ${sc.title}: ${sc.vignette} (Surprise question: ${sc.surprise_question})`;
                   const isSaved = savedInsights.includes(insightText);
                   return (
                     <article key={sc.kind} className="subcard">
@@ -397,7 +462,7 @@ export function ExploreStage({
           Back to Challenge
         </button>
         <button type="button" className="btn btn-primary" onClick={onNext}>
-          Continue to Reflect
+          Continue to Your Decision Record
         </button>
       </div>
     </section>

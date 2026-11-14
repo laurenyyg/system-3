@@ -289,6 +289,51 @@ select:focus {
   margin-top: 16px;
 }
 
+.epistemic-grid-understand {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.epistemic-card-full {
+  grid-column: 1 / -1;
+}
+
+.explore-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.explore-choice-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #fcfbf9;
+}
+
+.explore-choice-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+@media (max-width: 640px) {
+  .explore-choice-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .epistemic-card {
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -386,8 +431,57 @@ select:focus {
 
 .checklist-item {
   border-top: 1px solid var(--border);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.lens-questions-header {
+  margin-top: 14px;
   padding-top: 12px;
-  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.choice-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.choice-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.choice-chip:hover {
+  background: var(--surface-muted);
+  color: var(--text);
+}
+
+.choice-chip[aria-pressed='true'][data-choice='to_investigate'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.choice-chip[aria-pressed='true'][data-choice='answered'] {
+  background: var(--accent-soft);
+  border-color: #9ab8b0;
+  color: var(--accent);
+}
+
+.choice-chip[aria-pressed='true'][data-choice='not_relevant'] {
+  background: var(--surface-muted);
+  border-color: #b8b2a6;
+  color: var(--text);
 }
 
 .markdown-preview {
@@ -400,6 +494,12 @@ select:focus {
   white-space: pre-wrap;
   max-height: 420px;
   overflow-y: auto;
+}
+
+@media (max-width: 720px) {
+  .epistemic-grid-understand {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {

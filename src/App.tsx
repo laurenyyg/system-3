@@ -1,13 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import type {
-  ChallengeResult,
-  ChecklistStatus,
-  DecisionContext,
-  DecisionRecordObject,
-  LensesResult,
-  RehearsalResult,
-  Stage,
-  StructureDecisionOutput,
+import {
+  countWords,
+  MAX_SHARE_WORDS,
+  type ChallengeResult,
+  type ChecklistStatus,
+  type DecisionContext,
+  type DecisionRecordObject,
+  type LensesResult,
+  type RehearsalResult,
+  type Stage,
+  type StructureDecisionOutput,
 } from '../shared/schemas';
 import { callAnalyze } from './api';
 import { ChallengeStage } from './components/ChallengeStage';
@@ -19,7 +21,7 @@ const STAGES: { id: Stage; label: string; number: number }[] = [
   { id: 'understand', label: 'Understand', number: 2 },
   { id: 'challenge', label: 'Challenge', number: 3 },
   { id: 'explore', label: 'Explore', number: 4 },
-  { id: 'reflect', label: 'Reflect', number: 5 },
+  { id: 'reflect', label: 'Your Decision Record', number: 5 },
 ];
 
 const EXAMPLE_DESCRIPTION =
@@ -159,6 +161,9 @@ export default function App() {
     record,
   ]);
 
+  const shareWordCount = useMemo(() => countWords(rawDescription), [rawDescription]);
+  const shareOverLimit = shareWordCount > MAX_SHARE_WORDS;
+
   const decisionContext: DecisionContext | null = useMemo(() => {
     if (!structured) return null;
     return {
@@ -267,12 +272,12 @@ export default function App() {
         model: result.model,
         data: result.data,
       });
-      // Auto-expand recommended lenses on first generation
-      setSelectedLensIds((prev) =>
-        prev.length > 0
-          ? prev
-          : result.data.lenses.filter((l) => l.recommended).map((l) => l.id),
-      );
+      // Auto-expand only the first recommended lens on first generation
+      setSelectedLensIds((prev) => {
+        if (prev.length > 0) return prev;
+        const firstRec = result.data.lenses.find((l) => l.recommended);
+        return firstRec ? [firstRec.id] : [];
+      });
       markCompleted('explore');
     } catch (err) {
       setLensesError(
@@ -313,13 +318,28 @@ export default function App() {
     setRecordError(null);
     try {
       const selectedLensesPayload = lenses?.data.lenses
-        .filter((l) => selectedLensIds.includes(l.id))
-        .map((l) => ({
-          name: l.name,
-          unresolvedQuestions: l.questions
-            .filter((q) => checklistStatuses[q.id] !== 'answered')
-            .map((q) => q.question),
-        }));
+        .filter(
+          (l) =>
+            selectedLensIds.includes(l.id) ||
+            l.questions.some((q) => checklistStatuses[q.id] === 'to_investigate'),
+        )
+        .map((l) => {
+          const toExplore = l.questions
+            .filter((q) => checklistStatuses[q.id] === 'to_investigate')
+            .map((q) => q.question);
+          const remainingOpen = l.questions
+            .filter((q) => {
+              const s = checklistStatuses[q.id] || 'not_checked';
+              return s === 'not_checked';
+            })
+            .map((q) => q.question);
+          return {
+            name: l.name,
+            unresolvedQuestions:
+              toExplore.length > 0 ? toExplore : remainingOpen,
+          };
+        })
+        .filter((l) => l.unresolvedQuestions.length > 0);
 
       const result = await callAnalyze<DecisionRecordObject>('composeDecisionRecord', {
         context: decisionContext,
@@ -398,7 +418,7 @@ export default function App() {
           const isDone = completedStages.includes(item.id);
           const canNavigate =
             item.id === 'share' ||
-            (item.id === 'understand' && Boolean(rawDescription.trim())) ||
+            (item.id === 'understand' && Boolean(rawDescription.trim()) && !shareOverLimit) ||
             isDone ||
             Boolean(structured);
 
@@ -440,6 +460,38 @@ export default function App() {
                 setInputVersion((v) => v + 1);
               }}
             />
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 6,
+                fontSize: '0.82rem',
+              }}
+            >
+              <span
+                style={{
+                  color: shareOverLimit ? 'var(--error-text)' : 'var(--text-muted)',
+                }}
+              >
+                {shareOverLimit
+                  ? `Please keep this under ${MAX_SHARE_WORDS} words so we can focus on the core decision.`
+                  : ''}
+              </span>
+              <span
+                style={{
+                  fontWeight: shareWordCount >= 250 ? 600 : 400,
+                  color: shareOverLimit
+                    ? 'var(--error-text)'
+                    : shareWordCount >= 250
+                      ? '#9a6700'
+                      : 'var(--text-muted)',
+                }}
+              >
+                {shareWordCount} / {MAX_SHARE_WORDS} words
+              </span>
+            </div>
           </div>
 
           <div className="field">
@@ -474,7 +526,7 @@ export default function App() {
             <button
               type="button"
               className="btn btn-primary"
-              disabled={!rawDescription.trim()}
+              disabled={!rawDescription.trim() || shareOverLimit}
               onClick={() => {
                 markCompleted('share');
                 setStage('understand');
@@ -511,11 +563,11 @@ export default function App() {
           </div>
 
           <div className="field">
-            <label htmlFor="clarify-gains">2. What matters most to you / what are you hoping to gain?</label>
-            <input
+            <label htmlFor="clarify-gains">2. What are up to 5 things you&apos;re hoping to gain?</label>
+            <textarea
               id="clarify-gains"
-              type="text"
-              placeholder="e.g., Career growth, financial stability, adventure"
+              rows={6}
+              placeholder={`1. Long-term career growth\n2. Better quality of life\n3. Financial stability\n4. New experiences and personal growth\n5. Stronger social connections`}
               value={clarifications.gains}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, gains: e.target.value }));
@@ -525,11 +577,13 @@ export default function App() {
           </div>
 
           <div className="field">
-            <label htmlFor="clarify-worries">3. What worries you most / what might you lose?</label>
-            <input
+            <label htmlFor="clarify-worries">
+              3. What are up to 5 things you&apos;re most worried about losing?
+            </label>
+            <textarea
               id="clarify-worries"
-              type="text"
-              placeholder="e.g., Visa/healthcare contingencies, leaving family, job security"
+              rows={6}
+              placeholder={`1. Financial stability\n2. Career opportunities in the US\n3. Relationships with friends and family\n4. Access to familiar healthcare services\n5. The flexibility to change my mind or move back`}
               value={clarifications.worries}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, worries: e.target.value }));
@@ -539,11 +593,15 @@ export default function App() {
           </div>
 
           <div className="field">
-            <label htmlFor="clarify-outcome">4. What would success and failure look like?</label>
-            <input
+            <label htmlFor="clarify-outcome">
+              4. Imagine it&apos;s six months after you&apos;ve made your decision, and things have
+              turned out well. What does your life look like? What are you doing, how are you
+              feeling, and what makes you believe you made the right choice?
+            </label>
+            <textarea
               id="clarify-outcome"
-              type="text"
-              placeholder="e.g., Success = thriving in a year; Failure = feeling trapped with few options"
+              rows={6}
+              placeholder="Six months from now, I've settled into life in Singapore. I'm doing meaningful work, building friendships, and feeling more connected than I did in the US. I have enough financial security to feel comfortable, and I can see opportunities for my career to grow. Even though some things have been difficult, I feel that taking the risk was worthwhile."
               value={clarifications.successAndFailure}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, successAndFailure: e.target.value }));
@@ -607,7 +665,7 @@ export default function App() {
                 </p>
               </div>
 
-              <div className="epistemic-grid">
+              <div className="epistemic-grid epistemic-grid-understand">
                 <div className="epistemic-card">
                   <h3>Options</h3>
                   <ul>
@@ -646,7 +704,7 @@ export default function App() {
                   </ul>
                 </div>
 
-                <div className="epistemic-card">
+                <div className="epistemic-card epistemic-card-full">
                   <h3>Unknowns &amp; missing info</h3>
                   <ul>
                     {[...structured.data.unknowns, ...structured.data.missing_information].map(

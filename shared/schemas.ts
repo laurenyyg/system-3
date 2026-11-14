@@ -13,6 +13,7 @@ export const ChecklistStatusSchema = z.enum([
   'not_checked',
   'to_investigate',
   'answered',
+  'not_relevant',
 ]);
 export type ChecklistStatus = z.infer<typeof ChecklistStatusSchema>;
 
@@ -31,9 +32,23 @@ export const DecisionContextSchema = z.object({
 });
 export type DecisionContext = z.infer<typeof DecisionContextSchema>;
 
+export const MAX_SHARE_WORDS = 300;
+
+export function countWords(text: string): number {
+  const trimmed = text.trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
+
 // 1. structureDecision
 export const StructureDecisionInputSchema = z.object({
-  rawDescription: z.string().trim().min(1, 'Please describe your decision.').max(6000),
+  rawDescription: z
+    .string()
+    .trim()
+    .min(1, 'Please describe your decision.')
+    .max(6000)
+    .refine((val) => countWords(val) <= MAX_SHARE_WORDS, {
+      message: `Please keep your situation under ${MAX_SHARE_WORDS} words.`,
+    }),
   deadline: z.string().trim().max(200).nullable().optional(),
   clarifications: z
     .object({
