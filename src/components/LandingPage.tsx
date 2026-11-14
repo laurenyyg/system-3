@@ -2,6 +2,8 @@ import { useEffect, useRef } from 'react';
 import heroSailboatImg from '../../assets/Vintage Sailboat Amidst Rolling Waves.png';
 import shorelineLightImg from '../../assets/system3-faithful-light.png';
 import shorelineDarkImg from '../../assets/system3-faithful-dark.png';
+import kahnemanPortraitImg from '../../assets/daniel-kahneman.jpg';
+import mungerPortraitImg from '../../assets/charlie-munger.jpg';
 
 interface ExampleScenario {
   id: string;
@@ -287,42 +289,61 @@ export function LandingPage({
             <div className="principles-list">
               <article className="principle-item">
                 <h3 className="principle-title">Challenge your instincts.</h3>
-                <p className="principle-desc">
-                  <a
-                    href="https://fs.blog/daniel-kahneman-the-two-systems/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="principle-link"
-                  >
-                    Daniel Kahneman
-                  </a>{' '}
-                  showed us how cognitive biases shape our judgment. System 3 helps you question the
-                  assumptions that feel like facts.
-                </p>
+                <div className="principle-body">
+                  <img
+                    src={kahnemanPortraitImg}
+                    alt="Daniel Kahneman"
+                    className="principle-portrait principle-portrait--kahneman"
+                  />
+                  <p className="principle-desc">
+                    <a
+                      href="https://fs.blog/daniel-kahneman-the-two-systems/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="principle-link"
+                    >
+                      Daniel Kahneman
+                    </a>{' '}
+                    showed us how cognitive biases shape our judgment. System 3 helps you question the
+                    assumptions that feel like facts.
+                  </p>
+                </div>
               </article>
 
               <article className="principle-item">
                 <h3 className="principle-title">See the forces at play.</h3>
-                <p className="principle-desc">
-                  <a
-                    href="https://fs.blog/great-talks/psychology-human-misjudgment/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="principle-link"
-                  >
-                    Charlie Munger
-                  </a>
-                  &apos;s mental models and Lollapalooza Effect reveal how multiple psychological
-                  forces can compound. Learn to look beyond any single explanation.
-                </p>
+                <div className="principle-body">
+                  <img
+                    src={mungerPortraitImg}
+                    alt="Charlie Munger"
+                    className="principle-portrait principle-portrait--munger"
+                  />
+                  <p className="principle-desc">
+                    <a
+                      href="https://fs.blog/great-talks/psychology-human-misjudgment/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="principle-link"
+                    >
+                      Charlie Munger
+                    </a>
+                    &apos;s mental models and Lollapalooza Effect reveal how multiple psychological
+                    forces can compound. Learn to look beyond any single explanation.
+                  </p>
+                </div>
               </article>
 
               <article className="principle-item">
                 <h3 className="principle-title">The questions you never thought to ask.</h3>
-                <p className="principle-desc">
-                  The most important blind spots are often unknown unknowns. Explore overlooked
-                  perspectives, stress-test possible futures, and make the decision your own.
-                </p>
+                <div className="principle-body">
+                  <span className="principle-portrait principle-you-badge" aria-hidden="true">
+                    You
+                  </span>
+                  <p className="principle-desc">
+                    The most important blind spots are often unknown unknowns. Explore overlooked
+                    perspectives, stress-test possible futures, and make the decision your own.
+                  </p>
+                </div>
               </article>
             </div>
           </div>

@@ -43,3 +43,8 @@ System 3 is a Gemini-powered decision-thinking companion for high-stakes decisio
    - `PORT` — Provided automatically by Railway; `server/prod.ts` binds to `0.0.0.0:$PORT`.
 4. **Persistent decision-start counter (optional):** Attach a **Railway Volume** to the service with mount path `/data`. Railway automatically injects `RAILWAY_VOLUME_MOUNT_PATH`, so `/api/decision-starts` persists the aggregate start count across deployments without an external database.
 5. **Healthcheck path (optional):** `/health` returns `200 {"ok":true,"service":"system-3"}` without calling Gemini.
+
+## Image Attribution
+
+- **Daniel Kahneman portrait** (`assets/daniel-kahneman.jpg`): Photo by [nrkbeta](https://www.flickr.com/people/95021520@N00) ([Flickr source](https://www.flickr.com/photos/nrkbeta/3283955327/)), cropped on [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Daniel_Kahneman_(3x4_cropped).jpg), licensed under [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) / [CC BY-SA 3.0 Norway](https://creativecommons.org/licenses/by-sa/3.0/no/).
+- **Charlie Munger portrait** (`assets/charlie-munger.jpg`): Photo by [Nick](https://www.flickr.com/people/11540081@N05) ([Flickr source](https://www.flickr.com/photos/11540081@N05/4588662554/)), cropped on [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Charlie_Munger_(cropped).jpg), licensed under [CC BY 2.0](https://creativecommons.org/licenses/by/2.0).
