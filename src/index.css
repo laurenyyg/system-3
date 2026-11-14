@@ -1318,6 +1318,20 @@ select:focus {
   align-self: flex-start;
   padding-left: 0;
   padding-right: 0;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+
+.example-card-action:hover:not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  color: var(--color-brand-hover);
+  text-decoration: underline;
+}
+
+.example-card-action:focus-visible {
+  color: var(--color-brand-hover);
+  text-decoration: underline;
 }
 
 /* Section 05 — Final CTA & Footer */
