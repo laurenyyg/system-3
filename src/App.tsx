@@ -14,6 +14,7 @@ import {
 import { callAnalyze } from './api';
 import { ChallengeStage } from './components/ChallengeStage';
 import { ExploreStage } from './components/ExploreStage';
+import { LandingPage } from './components/LandingPage';
 import { ReflectStage } from './components/ReflectStage';
 
 const STAGES: { id: Stage; label: string; number: number }[] = [
@@ -72,6 +73,7 @@ export default function App() {
     }
     return 'light';
   });
+  const [view, setView] = useState<'landing' | 'workspace'>('landing');
   const [saveLocally, setSaveLocally] = useState(false);
   const [stage, setStage] = useState<Stage>('share');
   const [completedStages, setCompletedStages] = useState<Stage[]>([]);
@@ -402,24 +404,101 @@ export default function App() {
     }
   }
 
+  const hasInProgressDecision = Boolean(
+    rawDescription.trim() ||
+      deadline.trim() ||
+      clarifications.options.trim() ||
+      clarifications.gains.trim() ||
+      clarifications.worries.trim() ||
+      clarifications.successAndFailure.trim() ||
+      structured ||
+      completedStages.length > 0,
+  );
+
+  function handleStartExample(description: string, exampleDeadline: string) {
+    if (
+      hasInProgressDecision &&
+      !window.confirm('You already have a decision in progress. Replace it with this example scenario?')
+    ) {
+      return;
+    }
+    setStage('share');
+    setCompletedStages([]);
+    setInputVersion((v) => v + 1);
+    setRawDescription(description);
+    setDeadline(exampleDeadline);
+    setClarifications(INITIAL_CLARIFICATIONS);
+    setStructured(undefined);
+    setChallenge(undefined);
+    setLenses(undefined);
+    setRehearsal(undefined);
+    setRecord(undefined);
+    setSelectedLensIds([]);
+    setChecklistStatuses({});
+    setSavedInsights([]);
+    setActiveExploreMode(null);
+    setUnderstandError(null);
+    setChallengeError(null);
+    setLensesError(null);
+    setRehearsalError(null);
+    setRecordError(null);
+    setView('workspace');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
   const currentStageMeta = STAGES.find((s) => s.id === stage) ?? STAGES[0];
+
+  if (view === 'landing') {
+    return (
+      <LandingPage
+        theme={theme}
+        onToggleTheme={() => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))}
+        hasInProgressDecision={hasInProgressDecision}
+        onEnterWorkspace={() => {
+          setView('workspace');
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }}
+        onStartExample={handleStartExample}
+      />
+    );
+  }
 
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="brand-lockup">
-          <h1 className="brand-title">
-            <span className="wordmark" aria-label="System 3">
-              <span aria-hidden="true">S</span>
-              <span className="wordmark-y" aria-hidden="true">
-                y
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="brand-home-btn"
+              aria-label="Return to System 3 overview"
+              onClick={() => {
+                setView('landing');
+                window.scrollTo({ top: 0, behavior: 'auto' });
+              }}
+            >
+              <span className="wordmark" aria-label="System 3">
+                <span aria-hidden="true">S</span>
+                <span className="wordmark-y" aria-hidden="true">
+                  y
+                </span>
+                <span aria-hidden="true">stem</span>
+                <span className="wordmark-three" aria-hidden="true">
+                  3
+                </span>
               </span>
-              <span aria-hidden="true">stem</span>
-              <span className="wordmark-three" aria-hidden="true">
-                3
-              </span>
-            </span>
-          </h1>
+            </button>
+            <button
+              type="button"
+              className="btn btn-tertiary btn-sm"
+              onClick={() => {
+                setView('landing');
+                window.scrollTo({ top: 0, behavior: 'auto' });
+              }}
+            >
+              ← Overview
+            </button>
+          </div>
           <p className="brand-tagline">
             System 1 thinks fast. System 2 thinks slow. System 3 challenges how you think.
           </p>
@@ -516,36 +595,8 @@ export default function App() {
       </nav>
 
       {stage === 'share' && (
-        <>
-          <section className="hero-section" aria-label="Introduction">
-            <div className="hero-copy">
-              <p className="hero-eyebrow">Decision Laboratory</p>
-              <h2 className="hero-headline">
-                The decisions that shape your life deserve deeper thinking.
-              </h2>
-              <p className="hero-body">
-                A space to question assumptions, explore possibilities, and see what you might be
-                missing.
-              </p>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => {
-                  const el = document.getElementById('decision-raw');
-                  el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  el?.focus();
-                }}
-              >
-                Start a Decision
-              </button>
-            </div>
-            <div className="hero-visual">
-              <img className="hero-illustration" src="/hero-sailboat.png" alt="" />
-            </div>
-          </section>
-
-          <section className="card">
-            <h2>What decision is weighing on you?</h2>
+        <section className="card">
+          <h2>What decision is weighing on you?</h2>
           <p className="helper">
             You don&apos;t need to have it figured out. Tell us what&apos;s happening in your own words.
           </p>
@@ -635,11 +686,10 @@ export default function App() {
                 setUnderstandError(null);
               }}
             >
-              Continue
+            Continue
             </button>
           </div>
-          </section>
-        </>
+        </section>
       )}
 
       {stage === 'understand' && (
