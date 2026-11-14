@@ -40,7 +40,7 @@ const JOURNEY_STEPS = [
   {
     number: '01',
     title: 'Share',
-    description: "Describe the decision you're facing.",
+    description: "Start with the decision that's been on your mind.",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 20h9" />
@@ -51,7 +51,7 @@ const JOURNEY_STEPS = [
   {
     number: '02',
     title: 'Understand',
-    description: 'Clarify your goals, concerns, and priorities.',
+    description: "Discover what matters most to you — and what's holding you back.",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="12" cy="12" r="9" />
@@ -62,7 +62,7 @@ const JOURNEY_STEPS = [
   {
     number: '03',
     title: 'Challenge',
-    description: 'Examine assumptions and potential cognitive blind spots.',
+    description: 'Uncover the blind spots hiding in plain sight.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z" />
@@ -73,7 +73,7 @@ const JOURNEY_STEPS = [
   {
     number: '04',
     title: 'Explore',
-    description: 'Consider different perspectives and rehearse possible futures.',
+    description: 'Stress-test your choices. Run a pre-mortem. Explore what could unfold.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="6" cy="18" r="2.5" />
@@ -87,7 +87,7 @@ const JOURNEY_STEPS = [
   {
     number: '05',
     title: 'Reflect',
-    description: 'Preserve your reasoning in a Decision Record.',
+    description: 'Capture your thinking today, for your future self to revisit.',
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -146,14 +146,19 @@ export function LandingPage({
           <div className="landing-header-actions">
             <button
               type="button"
-              className="btn btn-sm"
+              className="btn btn-sm landing-theme-btn"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
               onClick={onToggleTheme}
             >
-              {theme === 'light' ? 'Dark mode' : 'Light mode'}
+              <span className="theme-label-full">
+                {theme === 'light' ? 'Dark mode' : 'Light mode'}
+              </span>
+              <span className="theme-label-short" aria-hidden="true">
+                {theme === 'light' ? 'Dark' : 'Light'}
+              </span>
             </button>
             <button type="button" className="btn btn-primary btn-sm" onClick={onEnterWorkspace}>
-              Start Thinking
+              {hasInProgressDecision ? 'Continue Your Decision' : 'Start a Decision'}
             </button>
           </div>
         </div>
@@ -300,20 +305,62 @@ export function LandingPage({
       </main>
 
       <footer className="landing-footer">
-        <div className="landing-container landing-footer-inner">
-          <span className="wordmark landing-footer-wordmark" aria-label="System 3">
-            <span aria-hidden="true">S</span>
-            <span className="wordmark-y" aria-hidden="true">
-              y
-            </span>
-            <span aria-hidden="true">stem</span>
-            <span className="wordmark-three" aria-hidden="true">
-              3
-            </span>
-          </span>
-          <p className="landing-footer-note">
-            No account required · Nothing stored in a database.
-          </p>
+        <div className="landing-container">
+          <div className="landing-footer-main">
+            <div className="landing-footer-brand">
+              <span className="wordmark landing-footer-wordmark" aria-label="System 3">
+                <span aria-hidden="true">S</span>
+                <span className="wordmark-y" aria-hidden="true">
+                  y
+                </span>
+                <span aria-hidden="true">stem</span>
+                <span className="wordmark-three" aria-hidden="true">
+                  3
+                </span>
+              </span>
+              <p className="landing-footer-tagline">A companion for clearer thinking.</p>
+            </div>
+
+            <div className="landing-footer-founder">
+              <p className="landing-footer-byline">
+                Created by <strong>Lauren Yu</strong>
+              </p>
+              <ul className="landing-footer-links">
+                <li>
+                  <a href="mailto:laurenyu.317@gmail.com" className="landing-footer-link">
+                    Email
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://linkedin.com/in/laurenyyy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="landing-footer-link"
+                  >
+                    LinkedIn
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://laureny.org/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="landing-footer-link"
+                  >
+                    Personal Website
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="landing-footer-bottom">
+            <p className="landing-footer-note">© 2026 System 3</p>
+            <p className="landing-footer-note">
+              No account required · Nothing stored in a database.
+            </p>
+          </div>
         </div>
       </footer>
     </div>
