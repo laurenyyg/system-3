@@ -131,3 +131,18 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, host, () => {
   console.log(`[System 3] production server listening on http://${host}:${port}`);
 });
+
+function shutdown(signal: string) {
+  console.log(`[System 3] received ${signal}, shutting down gracefully`);
+  server.close(() => {
+    process.exit(0);
+  });
+  server.closeIdleConnections?.();
+  setTimeout(() => {
+    server.closeAllConnections?.();
+    process.exit(0);
+  }, 2000).unref();
+}
+
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
