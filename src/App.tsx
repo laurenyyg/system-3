@@ -28,6 +28,45 @@ const STAGES: { id: Stage; label: string; number: number }[] = [
 const EXAMPLE_DESCRIPTION =
   "I have one week to decide whether to move to Singapore for work. It feels like a once-in-a-lifetime opportunity, but I'm stressed and worried about what I haven't considered.";
 
+const CAREER_EXAMPLE_DESCRIPTION =
+  "I've been offered a leadership role at an early-stage company, which would mean leaving a stable, well-compensated position where I'm respected. The upside is exciting, but I'm unsure how much of my hesitation is healthy caution versus fear of change.";
+
+const ENTREPRENEURSHIP_EXAMPLE_DESCRIPTION =
+  "I'm considering leaving my job to start a company with a former colleague. We have strong early conviction in the problem, but limited runway and unanswered questions about our partnership, customer demand, and personal financial tolerance.";
+
+const UNDERSTAND_PLACEHOLDERS = {
+  default: {
+    options:
+      "I could stay in my current role in the US or transfer to Singapore. I'm leaning toward Singapore because I'm excited about the change, but I'm worried about the risks.",
+    gains:
+      '1. Long-term career growth\n2. Better quality of life\n3. Financial stability\n4. New experiences and personal growth\n5. Stronger social connections',
+    worries:
+      '1. Financial stability\n2. Career opportunities in the US\n3. Relationships with friends and family\n4. Access to familiar healthcare services\n5. The flexibility to change my mind or move back',
+    outcome:
+      "Six months from now, I've settled into life in Singapore. I'm doing meaningful work, building friendships, and feeling more connected than I did in the US. I have enough financial security to feel comfortable, and I can see opportunities for my career to grow. Even though some things have been difficult, I feel that taking the risk was worthwhile.",
+  },
+  career: {
+    options:
+      'I could stay in my stable, well-compensated current role or accept the leadership role at the early-stage company. I’m excited by the opportunity, but unsure whether my hesitation is healthy caution or fear of change.',
+    gains:
+      '1. Broader leadership experience\n2. More ownership and impact\n3. The chance to help shape an early-stage company\n4. New skills and professional growth\n5. A role that remains financially sustainable for me',
+    worries:
+      '1. Financial stability and predictable compensation\n2. The security of an established role\n3. The respect and trust I’ve built in my current position\n4. A sustainable workload and work-life balance\n5. Future options if the new role doesn’t work out',
+    outcome:
+      'Six months from now, I’ve settled into the leadership role and have clear priorities, support, and room to make a meaningful contribution. I’m learning, building trust with the team, and seeing progress on work that matters. The role is challenging but sustainable, and I feel the growth has been worth the uncertainty.',
+  },
+  entrepreneurship: {
+    options:
+      'I could stay in my current job or leave to start a company with my former colleague. I’m excited about the problem we want to solve, but I’m unsure whether our conviction is supported by enough evidence about customer demand, our partnership, and the financial risk.',
+    gains:
+      '1. The chance to solve a problem I care about\n2. More ownership over what I build\n3. The opportunity to create something with my former colleague\n4. Faster learning and professional growth\n5. The possibility of building a sustainable business',
+    worries:
+      '1. A stable income and financial security\n2. The savings or runway I would invest in the company\n3. A positive working relationship with my former colleague\n4. Time and energy for other parts of my life\n5. The ability to return to a comparable role if the company doesn’t work out',
+    outcome:
+      'Six months from now, we’ve tested whether customers genuinely need what we’re building and have a clearer view of the business’s costs and runway. My former colleague and I have agreed on our roles, decision-making, and how we’ll handle disagreements. I understand the personal financial risk, and I feel that continuing is a deliberate choice based on what we’ve learned.',
+  },
+} as const;
+
 const STORAGE_KEY = 'system3.decision.v1';
 const THEME_STORAGE_KEY = 'system3.theme';
 
@@ -463,42 +502,48 @@ export default function App() {
     );
   }
 
+  const trimmedDescription = rawDescription.trim();
+  const understandPlaceholders =
+    trimmedDescription === CAREER_EXAMPLE_DESCRIPTION
+      ? UNDERSTAND_PLACEHOLDERS.career
+      : trimmedDescription === ENTREPRENEURSHIP_EXAMPLE_DESCRIPTION
+        ? UNDERSTAND_PLACEHOLDERS.entrepreneurship
+        : UNDERSTAND_PLACEHOLDERS.default;
+
   return (
     <div className="app-shell">
       <header className="app-header">
         <div className="brand-lockup">
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              className="brand-home-btn"
-              aria-label="Return to System 3 overview"
-              onClick={() => {
-                setView('landing');
-                window.scrollTo({ top: 0, behavior: 'auto' });
-              }}
-            >
-              <span className="wordmark" aria-label="System 3">
-                <span aria-hidden="true">S</span>
-                <span className="wordmark-y" aria-hidden="true">
-                  y
-                </span>
-                <span aria-hidden="true">stem</span>
-                <span className="wordmark-three" aria-hidden="true">
-                  3
-                </span>
+          <button
+            type="button"
+            className="workspace-overview-link"
+            onClick={() => {
+              setView('landing');
+              window.scrollTo({ top: 0, behavior: 'auto' });
+            }}
+          >
+            ← Overview
+          </button>
+          <button
+            type="button"
+            className="brand-home-btn"
+            aria-label="Return to System 3 overview"
+            onClick={() => {
+              setView('landing');
+              window.scrollTo({ top: 0, behavior: 'auto' });
+            }}
+          >
+            <span className="wordmark" aria-label="System 3">
+              <span aria-hidden="true">S</span>
+              <span className="wordmark-y" aria-hidden="true">
+                y
               </span>
-            </button>
-            <button
-              type="button"
-              className="btn btn-tertiary btn-sm"
-              onClick={() => {
-                setView('landing');
-                window.scrollTo({ top: 0, behavior: 'auto' });
-              }}
-            >
-              ← Overview
-            </button>
-          </div>
+              <span aria-hidden="true">stem</span>
+              <span className="wordmark-three" aria-hidden="true">
+                3
+              </span>
+            </span>
+          </button>
           <p className="brand-tagline">
             System 1 thinks fast. System 2 thinks slow. System 3 challenges how you think.
           </p>
@@ -706,7 +751,7 @@ export default function App() {
             <textarea
               id="clarify-options"
               rows={3}
-              placeholder="I could stay in my current role in the US or transfer to Singapore. I'm leaning toward Singapore because I'm excited about the change, but I'm worried about the risks."
+              placeholder={understandPlaceholders.options}
               value={clarifications.options}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, options: e.target.value }));
@@ -720,7 +765,7 @@ export default function App() {
             <textarea
               id="clarify-gains"
               rows={6}
-              placeholder={`1. Long-term career growth\n2. Better quality of life\n3. Financial stability\n4. New experiences and personal growth\n5. Stronger social connections`}
+              placeholder={understandPlaceholders.gains}
               value={clarifications.gains}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, gains: e.target.value }));
@@ -736,7 +781,7 @@ export default function App() {
             <textarea
               id="clarify-worries"
               rows={6}
-              placeholder={`1. Financial stability\n2. Career opportunities in the US\n3. Relationships with friends and family\n4. Access to familiar healthcare services\n5. The flexibility to change my mind or move back`}
+              placeholder={understandPlaceholders.worries}
               value={clarifications.worries}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, worries: e.target.value }));
@@ -754,7 +799,7 @@ export default function App() {
             <textarea
               id="clarify-outcome"
               rows={6}
-              placeholder="Six months from now, I've settled into life in Singapore. I'm doing meaningful work, building friendships, and feeling more connected than I did in the US. I have enough financial security to feel comfortable, and I can see opportunities for my career to grow. Even though some things have been difficult, I feel that taking the risk was worthwhile."
+              placeholder={understandPlaceholders.outcome}
               value={clarifications.successAndFailure}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, successAndFailure: e.target.value }));

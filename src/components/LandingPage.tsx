@@ -27,7 +27,7 @@ const EXAMPLE_SCENARIOS: ExampleScenario[] = [
   },
   {
     id: 'career',
-    title: 'Is it time to change direction?',
+    title: 'Is it time to change career direction?',
     description: 'The familiar path feels safe. But what might staying cost you?',
     imageLight: '/examples/career-light.png',
     imageDark: '/examples/career-dark.png',
@@ -37,7 +37,7 @@ const EXAMPLE_SCENARIOS: ExampleScenario[] = [
   },
   {
     id: 'entrepreneurial',
-    title: 'Is your idea worth the leap?',
+    title: 'Is your startup idea worth the leap?',
     description: "What if it succeeds? What if it fails? What haven't you considered?",
     imageLight: '/examples/entrepreneurship-light.png',
     imageDark: '/examples/entrepreneurship-dark.png',
