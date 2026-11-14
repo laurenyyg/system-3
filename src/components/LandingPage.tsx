@@ -1,7 +1,11 @@
+import heroSailboatImg from '../../assets/Vintage Sailboat Amidst Rolling Waves.png';
+
 interface ExampleScenario {
   id: string;
   title: string;
   description: string;
+  imageLight: string;
+  imageDark: string;
   prefillDescription: string;
   prefillDeadline: string;
 }
@@ -9,27 +13,31 @@ interface ExampleScenario {
 const EXAMPLE_SCENARIOS: ExampleScenario[] = [
   {
     id: 'relocation',
-    title: 'A move across the world',
+    title: 'Should you build a life somewhere else?',
     description:
-      'An opportunity to relocate for work, with unexpected career, healthcare, immigration, and personal considerations.',
+      "A new country. A promising opportunity. And a hundred questions you haven't asked.",
+    imageLight: '/examples/relocation-light.png',
+    imageDark: '/examples/relocation-dark.png',
     prefillDescription:
       "I have one week to decide whether to move to Singapore for work. It feels like a once-in-a-lifetime opportunity, but I'm stressed and worried about what I haven't considered.",
     prefillDeadline: '1 week',
   },
   {
     id: 'career',
-    title: 'A new career direction',
-    description:
-      'A difficult choice between staying in a familiar role and pursuing an uncertain opportunity.',
+    title: 'Is it time to change direction?',
+    description: 'The familiar path feels safe. But what might staying cost you?',
+    imageLight: '/examples/career-light.png',
+    imageDark: '/examples/career-dark.png',
     prefillDescription:
       "I've been offered a leadership role at an early-stage company, which would mean leaving a stable, well-compensated position where I'm respected. The upside is exciting, but I'm unsure how much of my hesitation is healthy caution versus fear of change.",
     prefillDeadline: '2 weeks',
   },
   {
     id: 'entrepreneurial',
-    title: 'An entrepreneurial leap',
-    description:
-      'A decision about whether to start a company, with potential risks, motivations, and blind spots.',
+    title: 'Is your idea worth the leap?',
+    description: "What if it succeeds? What if it fails? What haven't you considered?",
+    imageLight: '/examples/entrepreneurship-light.png',
+    imageDark: '/examples/entrepreneurship-dark.png',
     prefillDescription:
       "I'm considering leaving my job to start a company with a former colleague. We have strong early conviction in the problem, but limited runway and unanswered questions about our partnership, customer demand, and personal financial tolerance.",
     prefillDeadline: 'End of next month',
@@ -168,7 +176,7 @@ export function LandingPage({
         {/* Section 01 — Hero */}
         <section className="landing-hero" aria-labelledby="hero-heading">
           <div className="landing-hero-ocean" aria-hidden="true">
-            <img className="landing-hero-img" src="/hero-sailboat.png" alt="" />
+            <img className="landing-hero-img" src={heroSailboatImg} alt="" />
             <div className="landing-hero-scrim" />
           </div>
 
@@ -237,23 +245,42 @@ export function LandingPage({
 
             <div className="principles-list">
               <article className="principle-item">
-                <h3 className="principle-title">Challenge, don&apos;t decide.</h3>
+                <h3 className="principle-title">Challenge your instincts.</h3>
                 <p className="principle-desc">
-                  System 3 helps you examine your reasoning. The decision remains yours.
+                  <a
+                    href="https://fs.blog/daniel-kahneman-the-two-systems/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="principle-link"
+                  >
+                    Daniel Kahneman
+                  </a>{' '}
+                  showed us how cognitive biases shape our judgment. System 3 helps you question the
+                  assumptions that feel like facts.
                 </p>
               </article>
 
               <article className="principle-item">
-                <h3 className="principle-title">Questions before answers.</h3>
+                <h3 className="principle-title">See the forces at play.</h3>
                 <p className="principle-desc">
-                  Discover the important questions you may not have considered.
+                  <a
+                    href="https://fs.blog/great-talks/psychology-human-misjudgment/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="principle-link"
+                  >
+                    Charlie Munger
+                  </a>
+                  &apos;s mental models and Lollapalooza Effect reveal how multiple psychological
+                  forces can compound. Learn to look beyond any single explanation.
                 </p>
               </article>
 
               <article className="principle-item">
-                <h3 className="principle-title">Possibilities, not predictions.</h3>
+                <h3 className="principle-title">The questions you never thought to ask.</h3>
                 <p className="principle-desc">
-                  Explore plausible futures without pretending to know what will happen.
+                  The most important blind spots are often unknown unknowns. Explore overlooked
+                  perspectives, stress-test possible futures, and make the decision your own.
                 </p>
               </article>
             </div>
@@ -272,6 +299,16 @@ export function LandingPage({
               {EXAMPLE_SCENARIOS.map((example) => (
                 <article key={example.id} className="example-card">
                   <div>
+                    <div className="example-card-media" aria-hidden="true">
+                      <img
+                        className="example-card-img"
+                        src={theme === 'dark' ? example.imageDark : example.imageLight}
+                        alt=""
+                        width={560}
+                        height={185}
+                        loading="lazy"
+                      />
+                    </div>
                     <h3 className="example-card-title">{example.title}</h3>
                     <p className="example-card-desc">{example.description}</p>
                   </div>
