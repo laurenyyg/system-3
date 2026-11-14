@@ -461,12 +461,25 @@ export default function App() {
     ) {
       return;
     }
+    const trimmed = description.trim();
+    const matchedClarifications =
+      trimmed === CAREER_EXAMPLE_DESCRIPTION
+        ? UNDERSTAND_PLACEHOLDERS.career
+        : trimmed === ENTREPRENEURSHIP_EXAMPLE_DESCRIPTION
+          ? UNDERSTAND_PLACEHOLDERS.entrepreneurship
+          : UNDERSTAND_PLACEHOLDERS.default;
+
     setStage('share');
     setCompletedStages([]);
     setInputVersion((v) => v + 1);
     setRawDescription(description);
     setDeadline(exampleDeadline);
-    setClarifications(INITIAL_CLARIFICATIONS);
+    setClarifications({
+      options: matchedClarifications.options,
+      gains: matchedClarifications.gains,
+      worries: matchedClarifications.worries,
+      successAndFailure: matchedClarifications.outcome,
+    });
     setStructured(undefined);
     setChallenge(undefined);
     setLenses(undefined);
