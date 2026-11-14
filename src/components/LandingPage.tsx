@@ -1,4 +1,6 @@
 import heroSailboatImg from '../../assets/Vintage Sailboat Amidst Rolling Waves.png';
+import shorelineLightImg from '../../assets/system3-shoreline-light-clean.png';
+import shorelineDarkImg from '../../assets/system3-shoreline-dark-clean.png';
 
 interface ExampleScenario {
   id: string;
@@ -328,15 +330,30 @@ export function LandingPage({
         </section>
 
         {/* Section 05 — Final CTA */}
-        <section className="landing-final-cta">
+        <section className="landing-final-cta" aria-labelledby="final-cta-heading">
+          <div className="landing-final-cta-art" aria-hidden="true">
+            <img
+              className="landing-final-cta-img"
+              src={theme === 'dark' ? shorelineDarkImg : shorelineLightImg}
+              alt=""
+            />
+          </div>
           <div className="landing-container landing-final-cta-inner">
-            <h2 className="landing-final-heading">What might you be missing?</h2>
-            <p className="landing-final-body">
-              Your next important decision deserves a closer look.
-            </p>
-            <button type="button" className="btn btn-primary landing-cta-btn" onClick={onEnterWorkspace}>
-              {hasInProgressDecision ? 'Continue Your Decision →' : 'Start a Decision →'}
-            </button>
+            <div className="landing-final-cta-copy">
+              <h2 id="final-cta-heading" className="landing-final-heading">
+                What lies beyond the obvious?
+              </h2>
+              <p className="landing-final-body">
+                The most important questions are often the ones we haven&apos;t thought to ask.
+              </p>
+              <button
+                type="button"
+                className="btn btn-primary landing-cta-btn"
+                onClick={onEnterWorkspace}
+              >
+                {hasInProgressDecision ? 'Continue Your Decision →' : 'Start a Decision →'}
+              </button>
+            </div>
           </div>
         </section>
       </main>
@@ -365,7 +382,21 @@ export function LandingPage({
               <ul className="landing-footer-links">
                 <li>
                   <a href="mailto:laurenyu.317@gmail.com" className="landing-footer-link">
-                    Email
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="1" y="2.5" width="12" height="9" rx="1.5" />
+                      <path d="M1.5 3.5L7 7.5l5.5-4" />
+                    </svg>
+                    <span>Email</span>
                   </a>
                 </li>
                 <li>
@@ -375,7 +406,24 @@ export function LandingPage({
                     rel="noopener noreferrer"
                     className="landing-footer-link"
                   >
-                    LinkedIn
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <rect x="1.25" y="1.25" width="11.5" height="11.5" rx="2.2" />
+                      <path d="M4.4 6.4v3.4" />
+                      <circle cx="4.4" cy="4.3" r="0.6" fill="currentColor" stroke="none" />
+                      <path d="M6.9 9.8V6.4" />
+                      <path d="M6.9 7.5c0-.8.6-1.3 1.4-1.3.8 0 1.3.5 1.3 1.4v2.2" />
+                    </svg>
+                    <span>LinkedIn</span>
                   </a>
                 </li>
                 <li>
@@ -385,7 +433,22 @@ export function LandingPage({
                     rel="noopener noreferrer"
                     className="landing-footer-link"
                   >
-                    Personal Website
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="7" cy="7" r="5.75" />
+                      <path d="M1.5 7h11" />
+                      <path d="M7 1.25c1.5 1.55 2.3 3.55 2.3 5.75S8.5 11.2 7 12.75C5.5 11.2 4.7 9.2 4.7 7S5.5 2.8 7 1.25z" />
+                    </svg>
+                    <span>Personal Website</span>
                   </a>
                 </li>
               </ul>
