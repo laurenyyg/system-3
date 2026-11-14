@@ -54,6 +54,7 @@ interface LocalSnapshot {
   selectedLensIds: string[];
   checklistStatuses: Record<string, ChecklistStatus>;
   savedInsights: string[];
+  activeExploreMode?: 'lenses' | 'rehearse' | null;
   record?: Versioned<DecisionRecordObject>;
 }
 
@@ -76,6 +77,7 @@ export default function App() {
   const [selectedLensIds, setSelectedLensIds] = useState<string[]>([]);
   const [checklistStatuses, setChecklistStatuses] = useState<Record<string, ChecklistStatus>>({});
   const [savedInsights, setSavedInsights] = useState<string[]>([]);
+  const [activeExploreMode, setActiveExploreMode] = useState<'lenses' | 'rehearse' | null>(null);
 
   const [loadingUnderstand, setLoadingUnderstand] = useState(false);
   const [loadingChallenge, setLoadingChallenge] = useState(false);
@@ -108,6 +110,7 @@ export default function App() {
       setSelectedLensIds(parsed.selectedLensIds || []);
       setChecklistStatuses(parsed.checklistStatuses || {});
       setSavedInsights(parsed.savedInsights || []);
+      setActiveExploreMode(parsed.activeExploreMode ?? null);
       setRecord(parsed.record);
     } catch {
       // Ignore corrupt local snapshot
@@ -133,6 +136,7 @@ export default function App() {
       selectedLensIds,
       checklistStatuses,
       savedInsights,
+      activeExploreMode,
       record,
     };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
@@ -151,6 +155,7 @@ export default function App() {
     selectedLensIds,
     checklistStatuses,
     savedInsights,
+    activeExploreMode,
     record,
   ]);
 
@@ -160,6 +165,7 @@ export default function App() {
       decisionStatement: structured.data.decision_statement,
       deadline: deadline.trim() || null,
       options: structured.data.options,
+      currentLeaning: structured.data.current_leaning ?? null,
       goals: structured.data.goals,
       fears: structured.data.fears,
       successDefinition: structured.data.success_definition ?? null,
@@ -191,6 +197,7 @@ export default function App() {
     setSelectedLensIds([]);
     setChecklistStatuses({});
     setSavedInsights([]);
+    setActiveExploreMode(null);
     setUnderstandError(null);
     setChallengeError(null);
     setLensesError(null);
@@ -335,13 +342,20 @@ export default function App() {
     }
   }
 
+  function handleSelectExploreMode(mode: 'lenses' | 'rehearse') {
+    setActiveExploreMode(mode);
+    if (mode === 'lenses' && decisionContext && !lenses && !loadingLenses) {
+      void handleGenerateLenses();
+    }
+    if (mode === 'rehearse' && decisionContext && !rehearsal && !loadingRehearsal) {
+      void handleGenerateRehearsal();
+    }
+  }
+
   function goToStage(nextStage: Stage) {
     setStage(nextStage);
     if (nextStage === 'challenge' && decisionContext && !challenge && !loadingChallenge) {
       void handleGenerateChallenge();
-    }
-    if (nextStage === 'explore' && decisionContext && !lenses && !loadingLenses) {
-      void handleGenerateLenses();
     }
     if (nextStage === 'reflect' && decisionContext && !record && !loadingRecord) {
       void handleGenerateRecord();
@@ -481,11 +495,13 @@ export default function App() {
           </p>
 
           <div className="field">
-            <label htmlFor="clarify-options">1. What are the options you&apos;re considering?</label>
-            <input
+            <label htmlFor="clarify-options">
+              1. What options are available to you, and which way are you currently leaning (if any)?
+            </label>
+            <textarea
               id="clarify-options"
-              type="text"
-              placeholder='e.g., Accept the transfer, negotiate remote/delay, or "I am not sure"'
+              rows={3}
+              placeholder="I could stay in my current role in the US or transfer to Singapore. I'm leaning toward Singapore because I'm excited about the change, but I'm worried about the risks."
               value={clarifications.options}
               onChange={(e) => {
                 setClarifications((c) => ({ ...c, options: e.target.value }));
@@ -601,6 +617,11 @@ export default function App() {
                       <li>No explicit options confirmed yet</li>
                     )}
                   </ul>
+                  {structured.data.current_leaning && (
+                    <p style={{ margin: '8px 0 0', fontSize: '0.88rem' }}>
+                      <strong>Tentative leaning:</strong> {structured.data.current_leaning}
+                    </p>
+                  )}
                 </div>
 
                 <div className="epistemic-card">
@@ -655,6 +676,8 @@ export default function App() {
 
       {stage === 'explore' && (
         <ExploreStage
+          activeMode={activeExploreMode}
+          onSelectMode={handleSelectExploreMode}
           lenses={lenses}
           rehearsal={rehearsal}
           lensesStale={Boolean(lenses && lenses.generatedForVersion !== inputVersion)}

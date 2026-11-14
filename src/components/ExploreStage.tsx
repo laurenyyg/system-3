@@ -6,6 +6,8 @@ import type {
 } from '../../shared/schemas';
 
 interface Props {
+  activeMode: 'lenses' | 'rehearse' | null;
+  onSelectMode: (mode: 'lenses' | 'rehearse') => void;
   lenses?: { generatedForVersion: number; model: string; data: LensesResult };
   rehearsal?: { generatedForVersion: number; model: string; data: RehearsalResult };
   lensesStale: boolean;
@@ -34,6 +36,8 @@ const SCENARIO_LABELS: Record<'positive' | 'premortem' | 'mixed', string> = {
 };
 
 export function ExploreStage({
+  activeMode,
+  onSelectMode,
   lenses,
   rehearsal,
   lensesStale,
@@ -54,7 +58,6 @@ export function ExploreStage({
   onEditOptions,
   onNext,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<'lenses' | 'rehearse'>('lenses');
   const [selectedPathIndex, setSelectedPathIndex] = useState(0);
 
   const activePath =
@@ -64,31 +67,74 @@ export function ExploreStage({
     <section className="card">
       <h2>Explore Unknowns &amp; Possible Futures</h2>
       <p className="helper">
-        Use either mode in any order. Selections and checklist progress are preserved as you switch.
+        Choose how you want to explore next. You can use either mode in any order, and your
+        selections and checklist progress are preserved as you switch.
       </p>
 
-      <div className="tabs" role="tablist" aria-label="Explore modes">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'lenses'}
-          className="tab-btn"
-          onClick={() => setActiveTab('lenses')}
-        >
-          1. Choose Your Lenses
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeTab === 'rehearse'}
-          className="tab-btn"
-          onClick={() => setActiveTab('rehearse')}
-        >
-          2. Rehearse the Future
-        </button>
-      </div>
+      {activeMode === null ? (
+        <div className="epistemic-grid" style={{ marginTop: 12, marginBottom: 8 }}>
+          <article className="subcard" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
+            <div>
+              <h3>Choose Your Lenses</h3>
+              <p className="helper" style={{ marginBottom: 0 }}>
+                Explore your decision from different perspectives and generate actionable
+                checklists.
+              </p>
+            </div>
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => onSelectMode('lenses')}
+              >
+                Choose Your Lenses
+              </button>
+            </div>
+          </article>
 
-      {activeTab === 'lenses' && (
+          <article className="subcard" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: 12 }}>
+            <div>
+              <h3>Rehearse the Future</h3>
+              <p className="helper" style={{ marginBottom: 0 }}>
+                Explore plausible future scenarios, including positive, premortem, and mixed
+                outcomes.
+              </p>
+            </div>
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => onSelectMode('rehearse')}
+              >
+                Rehearse the Future
+              </button>
+            </div>
+          </article>
+        </div>
+      ) : (
+        <>
+          <div className="tabs" role="tablist" aria-label="Explore modes">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMode === 'lenses'}
+              className="tab-btn"
+              onClick={() => onSelectMode('lenses')}
+            >
+              1. Choose Your Lenses
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeMode === 'rehearse'}
+              className="tab-btn"
+              onClick={() => onSelectMode('rehearse')}
+            >
+              2. Rehearse the Future
+            </button>
+          </div>
+
+          {activeMode === 'lenses' && (
         <div>
           {lensesStale && (
             <div className="stale-banner">
@@ -222,7 +268,7 @@ export function ExploreStage({
         </div>
       )}
 
-      {activeTab === 'rehearse' && (
+      {activeMode === 'rehearse' && (
         <div>
           {rehearsalStale && (
             <div className="stale-banner">
@@ -342,6 +388,8 @@ export function ExploreStage({
             </div>
           )}
         </div>
+      )}
+        </>
       )}
 
       <div className="actions-row">
