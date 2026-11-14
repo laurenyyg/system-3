@@ -1103,6 +1103,10 @@ select:focus {
   color: var(--color-text-muted);
 }
 
+.hero-social-proof--above {
+  margin: 0 0 12px;
+}
+
 .hero-social-proof-link {
   background: transparent;
   border: 0;

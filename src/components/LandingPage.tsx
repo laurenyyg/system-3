@@ -136,6 +136,20 @@ export function LandingPage({
     video.play().catch(() => {});
   }, []);
 
+  const renderSocialProof = (aboveButton = false) =>
+    !hasInProgressDecision && decisionStartsCount !== null ? (
+      <p className={aboveButton ? 'hero-social-proof hero-social-proof--above' : 'hero-social-proof'}>
+        {decisionStartsCount.toLocaleString()} decisions started here.{' '}
+        <button
+          type="button"
+          className="hero-social-proof-link"
+          onClick={onEnterWorkspace}
+        >
+          Start yours.
+        </button>
+      </p>
+    ) : null;
+
   return (
     <div className="landing-page">
       <header className="landing-header">
@@ -217,21 +231,10 @@ export function LandingPage({
             </p>
 
             <div className="landing-hero-cta-row">
+              {renderSocialProof(true)}
               <button type="button" className="btn btn-primary landing-cta-btn" onClick={onEnterWorkspace}>
                 {hasInProgressDecision ? 'Continue Your Decision →' : 'Start a Decision →'}
               </button>
-              {!hasInProgressDecision && decisionStartsCount !== null && (
-                <p className="hero-social-proof">
-                  {decisionStartsCount.toLocaleString()} decisions started here.{' '}
-                  <button
-                    type="button"
-                    className="hero-social-proof-link"
-                    onClick={onEnterWorkspace}
-                  >
-                    Start yours.
-                  </button>
-                </p>
-              )}
             </div>
 
             <aside className="kahneman-note" aria-label="Intellectual inspiration">
@@ -410,6 +413,7 @@ export function LandingPage({
               >
                 {hasInProgressDecision ? 'Continue Your Decision →' : 'Start a Decision →'}
               </button>
+              {renderSocialProof(false)}
             </div>
           </div>
         </section>
