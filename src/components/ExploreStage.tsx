@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GenerationLoader } from './GenerationLoader';
 import type {
   ChecklistStatus,
   LensesResult,
@@ -179,7 +180,7 @@ export function ExploreStage({
                 disabled={loadingLenses}
                 onClick={onGenerateLenses}
               >
-                Regenerate lenses
+                {loadingLenses ? 'Regenerating…' : 'Regenerate lenses'}
               </button>
             </div>
           )}
@@ -191,7 +192,11 @@ export function ExploreStage({
           )}
 
           {loadingLenses && (
-            <p className="helper">Generating five tailored lenses and questions to explore…</p>
+            <GenerationLoader
+              title="Generating 5 personalized lenses…"
+              subtitle="Building tailored questions and verification steps. Usually takes 5–15 seconds."
+              variant="cards"
+            />
           )}
 
           {lensesError && (
@@ -344,7 +349,7 @@ export function ExploreStage({
                 disabled={loadingRehearsal}
                 onClick={onGenerateRehearsal}
               >
-                Regenerate rehearsal
+                {loadingRehearsal ? 'Regenerating…' : 'Regenerate rehearsal'}
               </button>
             </div>
           )}
@@ -356,9 +361,11 @@ export function ExploreStage({
           )}
 
           {loadingRehearsal && (
-            <p className="helper">
-              Generating positive, premortem, and mixed hypothetical scenarios…
-            </p>
+            <GenerationLoader
+              title="Generating possible future scenarios…"
+              subtitle="Building positive, premortem, and mixed outcomes. Usually takes 5–15 seconds."
+              variant="cards"
+            />
           )}
 
           {rehearsalError && (

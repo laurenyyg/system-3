@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { GenerationLoader } from './GenerationLoader';
 import type { DecisionContext, DecisionRecordObject } from '../../shared/schemas';
 import {
   renderDecisionRecordMarkdown,
@@ -77,7 +78,7 @@ export function ReflectStage({
             disabled={loading}
             onClick={onGenerate}
           >
-            Regenerate record
+            {loading ? 'Regenerating…' : 'Regenerate record'}
           </button>
         </div>
       )}
@@ -88,7 +89,13 @@ export function ReflectStage({
         </button>
       )}
 
-      {loading && <p className="helper">Composing your Decision Record with Gemini…</p>}
+      {loading && (
+        <GenerationLoader
+          title="Composing your Decision Record…"
+          subtitle="Synthesizing your thinking, open questions, and next steps. Usually takes 5–15 seconds."
+          variant="rows"
+        />
+      )}
 
       {error && (
         <div className="error-box" role="alert">
@@ -226,7 +233,7 @@ export function ReflectStage({
         </button>
         {record && (
           <button type="button" className="btn" disabled={loading} onClick={onGenerate}>
-            Regenerate Record
+            {loading ? 'Regenerating…' : 'Regenerate Record'}
           </button>
         )}
       </div>

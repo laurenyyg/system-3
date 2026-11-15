@@ -1792,3 +1792,130 @@ select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* Shared Gemini generation loader */
+@keyframes generation-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes generation-pulse {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+.generation-loader {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.generation-loader-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+}
+
+.generation-spinner {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-brand);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: generation-spin 0.75s linear infinite;
+}
+
+.generation-loader-copy {
+  min-width: 0;
+}
+
+.generation-loader-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.generation-loader-sub {
+  margin: 2px 0 0;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.generation-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.generation-skeleton-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.generation-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.generation-skeleton-bar {
+  height: 10px;
+  border-radius: 4px;
+  background: var(--color-border);
+  animation: generation-pulse 1.5s ease-in-out infinite;
+}
+
+.generation-skeleton-bar--sm {
+  width: 45%;
+}
+
+.generation-skeleton-bar--md {
+  width: 68%;
+}
+
+.generation-skeleton-bar--lg {
+  width: 84%;
+}
+
+.generation-skeleton-bar--full {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .generation-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .generation-spinner {
+    animation-duration: 1.8s;
+  }
+
+  .generation-skeleton-bar {
+    animation: none;
+    opacity: 0.65;
+  }
+}

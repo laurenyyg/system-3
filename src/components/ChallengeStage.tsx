@@ -1,3 +1,4 @@
+import { GenerationLoader } from './GenerationLoader';
 import type { ChallengeResult } from '../../shared/schemas';
 
 interface Props {
@@ -49,7 +50,13 @@ export function ChallengeStage({
         </div>
       )}
 
-      {loading && <p className="helper">Analyzing potential blind spots and interactions with Gemini…</p>}
+      {loading && (
+        <GenerationLoader
+          title="Analyzing potential blind spots…"
+          subtitle="Reviewing your facts, assumptions, and interacting pressures. Usually takes 5–15 seconds."
+          variant="rows"
+        />
+      )}
 
       {error && (
         <div className="error-box" role="alert">
